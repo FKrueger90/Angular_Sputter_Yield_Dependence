@@ -12,7 +12,7 @@ path_data_range = os.path.join(dir_data, "Range_Data_All")
 srim.initialize_data_file(path_data_range)
 
 # angle_bins
-theta = np.linspace(0, math.pi/2, 100)
+theta = np.linspace(0, math.pi/2, 91)
 path_data_angdep = os.path.join(dir_data, "Angular_Dependence_All")
 angdep.initialize_file(path_data_angdep, theta/angdep.degtorad)
 
