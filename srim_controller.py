@@ -1,6 +1,5 @@
 import os
 import subprocess
-
 import numpy as np
 import periodictable as pt
 
@@ -96,7 +95,7 @@ def create_input_file(path_file_in, ion, energy_ion_min, energy_ion_max,
     f.write("---Number of Target Elements\n")
     f.write(f"{len(target_elements)}\n")
     f.write(f"---Target Elements: (Z), Target name, Stoich, Target Mass(u)\n")
-    # fetch target elemnt data from periodic tabel module and write to file
+    # fetch target element data from periodic table module and write to file
     for e in target_elements:
         # atomic number
         z = str(eval(f"pt.{e[0]}.number"))
@@ -117,7 +116,10 @@ def read_output_file(path_file_out):
     Array columns:
         energy (eV)     range (nm)      long. straggle (nm)     lat. straggle (nm)
     Args:
-        path_file_out:
+        path_file_out (str): path to file
+
+    Returns:
+        np.ndarray:  data array
     """
     # identify data lines
     f = open(path_file_out, "r")
@@ -159,17 +161,42 @@ def read_output_file(path_file_out):
 
 
 def get_mass(element_symbol):
+    """
+    fetches atomic mass in amu of element using the periodictable module
+    Args:
+        element_symbol (str): Element symbol
+
+    Returns:
+        float: mass (amu)
+    """
     mass = eval(f"pt.{element_symbol}.mass")
     return mass
 
 
 def get_z(element_symbol):
+    """
+    fetches atomic number of element using the periodictable module
+    Args:
+        element_symbol (str): Element symbol
+
+    Returns:
+        int: atomic number
+    """
     z = eval(f"pt.{element_symbol}.number")
     return z
 
 
-def run(ion_name, target_material):
+def run(ion_name, target_material, save_file=False):
+    """
+    run SRIM and extract run data from its output file
+    Args:
+        ion_name (str): name of incident ion
+        target_material (str): name of target material
+        save_file (bool): save additional  singular output file
 
+    Returns:
+
+    """
     # directory and path config
     dir_srim_module = os.path.abspath("SRIM_Module")
     path_srim_module = os.path.join(dir_srim_module, "SRModule.exe")
@@ -194,32 +221,49 @@ def run(ion_name, target_material):
     # pack ion variable
     ion = (ion_name, get_mass(ion_name), get_z(ion_name))
 
-    name_file_out = create_input_file(path_srim_in, ion, energy_min, energy_max, density,  0.9457121, target_elements)
+    # create SRIM input file and save output file name
+    name_file_out = create_input_file(path_srim_in, ion, energy_min, energy_max, density,  0.0, target_elements)
 
     path_file_out = os.path.join(dir_srim_module, name_file_out)
 
     # run SRIM module
     subprocess.run(path_srim_module, cwd=dir_srim_module)
 
+    # read SRIM output file
     data_run = read_output_file(path_file_out)
 
-    path_file_data = os.path.join(dir_data, set_name_file(ion, target_elements))
-    np.savetxt(path_file_data, data_run)
+    # save SRIM output data to output file
+    if save_file:
+        path_file_data = os.path.join(dir_data, set_name_file(ion, target_elements))
+        np.savetxt(path_file_data, data_run)
+
+    return data_run
 
 
-# Script start
-# ==================================================================================================================
+def append_to_data_file(path, data, target, ion):
+    """
+    append range data to data file
+    Args:
+        path (str): path to data file
+        data (np.ndarray): 2D data array
+        target (str): name of target material
+        ion (str): name of incident ion
+    """
+    f = open(path, 'a')
+    f.write(f"Target: {target}, Ion: {ion}\n")
+    f.write("----------------------------\n")
+    for row in data:
+        for element in row:
+            f.write(f"{element:.2f}, ")
+        f.write("\n")
+    f.write("\n")
+    f.close()
 
-targets = ["Cu", "Ag", "SiO2", "Si", "Si3N4", "GaAs", "Ge", "HfO2", "C"]
-for target_material in targets:
 
-    for ion_obj in pt.elements:
-        ion_name = ion_obj.symbol
-        # skip first element 'n'
-        if ion_name == "n":
-            continue
-        if ion_name == "Np":
-            break
-
-        run(ion_name, target_material)
-
+def initialize_data_file(path):
+    if os.path.exists(path):
+        os.remove(path)
+    f = open(path, 'w')
+    f.write(f"incident energy (eV), projected range (nm), longitudinal straggle (nm), lateral straggle (nm),\n")
+    f.write("===============================================================================================\n\n")
+    f.close()

@@ -47,11 +47,11 @@ def plot_angular_dependence(rangedata_file, energies, normalize=True):
         plt.plot(theta, y, label=f"{energy} eV")
         plt.xticks([0, degtorad * 15, degtorad * 30, pi / 4, degtorad * 60, degtorad * 75, pi / 2],
                ['0', '15', '30', '45', '60', '75', '90'])
-    #plt.plot(*zip(*maxima), "--")
     plt.legend()
     plt.savefig('angular_dependence.png')
 
     plt.close()
+
 
 set_plot_globals()
 
@@ -65,3 +65,44 @@ energies = [100, 500, 1000 ]
 plot_angular_dependence("Data\\Ar---SiO2.rangedata", energies, normalize=True)
 
 plot_range(files_range)
+
+
+
+# variation of a
+# -------------------------------------------------------------------
+a_list = [1, 2, 3, 4, 5]
+maxima = []
+for a in a_list:
+    alpha = a / 2.5
+    beta = a / 1.5
+
+    y = angdep(theta, a, alpha, beta, normalize=False)
+    max_index = np.argmax(y)
+    maxima.append((theta[max_index], y[max_index]))
+    plt.plot(theta, y)
+
+plt.xticks([0, degtorad * 15, degtorad * 30, pi / 4, degtorad * 60, degtorad * 75, pi / 2],
+           ['0', '15', '30', '45', '60', '75', '90'])
+plt.plot(*zip(*maxima), "--")
+plt.savefig('a_var.png')
+plt.close()
+
+# variation of alpha=beta, a=4
+# -------------------------------------------------------------------
+ratio_list = [2, 3, 4, 5]
+maxima = []
+for ratio in ratio_list:
+    a = 2
+    alpha = a / ratio
+    beta = a / ratio
+
+    y = angdep(theta, a, alpha, beta, normalize=False)
+    max_index = np.argmax(y)
+    maxima.append((theta[max_index], y[max_index]))
+    plt.plot(theta, y)
+
+plt.xticks([0, degtorad * 15, degtorad * 30, pi / 4, degtorad * 60, degtorad * 75, pi / 2],
+           ['0', '15', '30', '45', '60', '75', '90'])
+plt.plot(*zip(*maxima), "--")
+plt.savefig('alpha_var.png')
+plt.close()
