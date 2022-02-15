@@ -143,14 +143,20 @@ def read_output_file(path_file_out):
             range = float(line_list[4])
             if line_list[5] == "A":
                 range = range / 10
+            elif line_list[5] == "um":
+                range = range * 1000
 
             long_straggle = float(line_list[6])
             if line_list[7] == "A":
                 long_straggle = long_straggle / 10
+            elif line_list[7] == "um":
+                long_straggle = long_straggle * 1000
 
             lat_straggle = float(line_list[8])
             if line_list[9] == "A":
                 lat_straggle = lat_straggle / 10
+            if line_list[9] == "um":
+                lat_straggle = lat_straggle * 1000
 
             row = np.array([energy, range, long_straggle, lat_straggle])
             # print(row)

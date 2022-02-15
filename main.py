@@ -16,7 +16,7 @@ theta = np.linspace(0, math.pi/2, 91)
 path_data_angdep = os.path.join(dir_data, "Angular_Dependence_All")
 angdep.initialize_file(path_data_angdep, theta/angdep.degtorad)
 
-targets = ["Cu", "Ag", "SiO2", "Si", "Si3N4", "GaAs", "Ge", "HfO2", "C"]
+targets = ["Cu", "Ag", "SiO2", "Si", "Si3N4", "GaAs", "Ge", "HfO2", "C", "Ge"]
 for target_material in targets:
 
     for ion_obj in pt.elements:
