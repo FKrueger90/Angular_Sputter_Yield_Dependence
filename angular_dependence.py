@@ -46,6 +46,43 @@ def append_angular_dependence_to_file(path, energy, a, alpha, beta, angular_prob
 	f.close()
 
 
+def read_angular_data_from_file(path, target_name, ion_name):
+	f = open(path, 'r')
+	lines = f.readlines()
+	in_block = False
+	print("reading angular dependence from file")
+	print("pair: ")
+	print(f"Target: {target_name}, Ion: {ion_name}")
+	theta = lines[2].strip().split(",")
+	if theta[-1] == '':
+		theta.pop(-1)
+	theta = [float(x) for x in theta]
+
+	angledata = [theta]  # theta line
+	for line in lines:
+		if f"Target: {target_name}, Ion: {ion_name}" in line:
+			print("found target ion pair")
+			in_block = True
+			continue
+		if in_block:
+			if "============" in line:
+				continue
+			elif line == "" or "Target" in line:
+				in_block = False
+				break
+			else:
+				# turn string into list of floats
+				line = line.strip().split(",")
+				if line[-1] == '':
+					line.pop(-1)
+				line = [float(x) for x in line]
+				angledata.append(line)
+	f.close()
+#	for a in angledata:
+#		print(a)
+	return angledata
+
+
 def angdep(theta, a, alpha, beta, normalize=True):
 	eta = np.cos(theta)
 	eta_prime = np.sqrt(1-(eta**2))

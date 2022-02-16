@@ -39,3 +39,4 @@ for target_material in targets:
             energy, a, alpha, beta = e
             ang_prob = angdep.angdep(theta, a, alpha, beta, normalize=True)
             angdep.append_angular_dependence_to_file(path_data_angdep, energy, a, alpha, beta, ang_prob)
+

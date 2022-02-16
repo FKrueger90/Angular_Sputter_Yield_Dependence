@@ -114,7 +114,7 @@ def read_output_file(path_file_out):
     """
     reads in SRIM- output file and raturns array with results
     Array columns:
-        energy (eV)     range (nm)      long. straggle (nm)     lat. straggle (nm)
+        energy (eV)     erange (nm)      long. straggle (nm)     lat. straggle (nm)
     Args:
         path_file_out (str): path to file
 
@@ -140,11 +140,11 @@ def read_output_file(path_file_out):
             elif line_list[1] == "MeV":
                 energy = energy * 1000000
 
-            range = float(line_list[4])
+            erange = float(line_list[4])
             if line_list[5] == "A":
-                range = range / 10
+                erange = erange / 10
             elif line_list[5] == "um":
-                range = range * 1000
+                erange = erange * 1000
 
             long_straggle = float(line_list[6])
             if line_list[7] == "A":
@@ -158,11 +158,32 @@ def read_output_file(path_file_out):
             if line_list[9] == "um":
                 lat_straggle = lat_straggle * 1000
 
-            row = np.array([energy, range, long_straggle, lat_straggle])
+            row = np.array([energy, erange, long_straggle, lat_straggle])
             # print(row)
             array_out = np.vstack([array_out, row])
     # remove first dummy line of array
     array_out = array_out[1:, :]
+
+    # interpolate
+
+    for column in [1, 2, 3]:
+        last_val = 0.0
+        consecutive = 1
+        for i, val in enumerate(array_out[:, column]):
+            if val == last_val:
+                consecutive += 1
+                continue
+
+            last_val = val
+            if consecutive > 1:
+                val_left = array_out[i-consecutive, column]
+                val_right = array_out[i, column]
+                delta = (val_right-val_left)/consecutive
+
+                for idx_back in range(consecutive):
+                    array_out[(i-idx_back), column] = round((val_right - (idx_back * delta)), 4)
+            consecutive = 1
+
     return array_out
 
 
