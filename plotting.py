@@ -9,6 +9,7 @@ from matplotlib import animation
 dir_data = os.path.join(os.getcwd(), "Data")
 path_data_angdep = os.path.join(dir_data, "Angular_Dependence_All")
 
+
 def set_plot_globals():
     """
     sets global plotting presets
@@ -48,7 +49,7 @@ def plot_angular_dependence(rangedata_file, energies, normalize=True):
     plt.figure()
     for energy in energies:
         e, a, alpha, beta = angdep.find_nearest_match_in_range_data(energy, rangedata_file)
-        y = angdep(theta, a, alpha, beta, normalize=normalize)
+        y = angdep.angdep(theta, a, alpha, beta, normalize=normalize)
 
         plt.plot(theta, y, label=f"{energy} eV")
         plt.xticks([0, degtorad * 15, degtorad * 30, math.pi / 4, degtorad * 60, degtorad * 75, math.pi / 2],
@@ -111,7 +112,44 @@ def plot_angdep_movie(target_material, ion, path_data, dir_animations):
     anim.save(name_file, fps=10, extra_args=['-vcodec', 'mpeg4'], dpi=250, bitrate=5000)
 
 
+def plot_mcfpm_reference(num=0):
+
+    mcfpm_theta = [0., 10., 20., 30., 40., 50., 60., 70., 80., 90.]
+    mcfpm_angdeps = [
+        [0.56, 0.58, 0.60, 0.58, 0.86, 1.30, 1.34, 1.00, 0.74, 0.00],
+        [1.00, 1.00, 1.00, 1.00, 1.00, 0.90, 0.80, 0.60, 0.30, 0.00],
+        [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.80, 0.60, 0.30, 0.00],
+        [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.70, 0.40, 0.00],
+        [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.60, 0.00],
+        [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+        [1.00, 0.50, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00],
+        [0.80, 0.83, 0.85, 0.83, 0.89, 1.30, 1.34, 1.00, 0.74, 0.00],
+        [1.00, 1.00, 1.00, 1.00, 1.00, 0.90, 0.80, 0.60, 0.38, 0.10],
+        [1.00, 1.00, 1.00, 1.00, 1.00, 0.90, 0.80, 0.60, 0.40, 0.20],
+        [1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.60, 0.20],
+        [0.56, 0.58, 0.60, 0.58, 0.86, 1.30, 1.34, 1.20, 0.94, 0.50],
+        [1.00, 1.00, 1.00, 1.00, 0.90, 0.80, 0.60, 0.30, 0.00, 0.00]]
+
+    plt.figure()
+    if num == 0:
+        for mcfpm_angdep in mcfpm_angdeps:
+            num = num + 1
+            plt.plot(mcfpm_theta, mcfpm_angdep, label=f"{num}")
+
+    else:
+        if type(num) == int:
+            nums = [num]
+        for i in nums:
+            plt.plot(mcfpm_theta, mcfpm_angdeps[i-1], label=f"{i}")
+    plt.legend()
+    plt.show()
+
+    return [mcfpm_theta, mcfpm_angdeps]
+
+
 set_plot_globals()
 dir_figures, dir_animations = check_output_folders()
 
+plot_mcfpm_reference(1)
+exit()
 plot_angdep_movie("Si", "F", path_data_angdep, dir_animations)

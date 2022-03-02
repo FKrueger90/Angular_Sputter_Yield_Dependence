@@ -5,6 +5,11 @@ import angular_dependence as angdep
 import numpy as np
 import math
 
+# Target Species SETUP
+# ==================================================================================================================
+targets = ["Cu", "Ag", "SiO2", "Si", "Si3N4", "GaAs", "Ge", "HfO2", "C", "Ge",
+           "C8H8", "C4F4H4"]
+
 # Script start
 # ==================================================================================================================
 dir_data = os.path.join(os.getcwd(), "Data")
@@ -16,7 +21,6 @@ theta = np.linspace(0, math.pi/2, 91)
 path_data_angdep = os.path.join(dir_data, "Angular_Dependence_All")
 angdep.initialize_file(path_data_angdep, theta/angdep.degtorad)
 
-targets = ["Cu", "Ag", "SiO2", "Si", "Si3N4", "GaAs", "Ge", "HfO2", "C", "Ge"]
 for target_material in targets:
 
     for ion_obj in pt.elements:
@@ -39,4 +43,3 @@ for target_material in targets:
             energy, a, alpha, beta = e
             ang_prob = angdep.angdep(theta, a, alpha, beta, normalize=True)
             angdep.append_angular_dependence_to_file(path_data_angdep, energy, a, alpha, beta, ang_prob)
-

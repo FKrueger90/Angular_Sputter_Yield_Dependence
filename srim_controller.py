@@ -22,8 +22,8 @@ def get_density(name_material):
 
     Returns:
         float: density in g/cm3
-
     """
+
     densities = {
         "SiO2": 2.196,
         "Si": 2.33,
@@ -35,8 +35,29 @@ def get_density(name_material):
         "Cu": 8.96,
         "Copper": 8.96,
         "Ag": 10.49,
+        "C8H8": 1.06,    # Polystyrene
+        "C4F4H4": 1.55   # Polyethylene + Teflon Mix
         }
     return densities[name_material]
+
+
+def compound_composition(name_material):
+    """
+    fetches and returns compound correction factor
+    Args:
+        name_material (str): name of material
+
+    Returns:
+        float: correction factor
+    """
+
+    correction_factors = {
+        "C8H8": 1.003482     # Polystyrene
+        }
+    if name_material in correction_factors:
+        return correction_factors[name_material]
+    else:
+        return 1.0
 
 
 def get_composition(symbol):
@@ -288,6 +309,11 @@ def append_to_data_file(path, data, target, ion):
 
 
 def initialize_data_file(path):
+    """
+    Write header to range data file
+    Args:
+        path (str): path to range data output file
+    """
     if os.path.exists(path):
         os.remove(path)
     f = open(path, 'w')

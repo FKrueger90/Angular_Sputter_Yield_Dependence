@@ -78,12 +78,22 @@ def read_angular_data_from_file(path, target_name, ion_name):
 				line = [float(x) for x in line]
 				angledata.append(line)
 	f.close()
-#	for a in angledata:
-#		print(a)
 	return angledata
 
 
 def angdep(theta, a, alpha, beta, normalize=True):
+	"""
+	calculates  angular dependence based on range parameters for a given angle range
+	Args:
+		theta (np.ndarray):  array of incidence-angles in degree
+		a (float): projected energy range in nm
+		alpha (float): lateral straggle in nm
+		beta (float): longitudinal straggle in nm
+		normalize (bool): normalize to angdep(0°)=1
+
+	Returns:
+		np.ndarray: y - array containing angular dependence as a function of angle in degree
+	"""
 	eta = np.cos(theta)
 	eta_prime = np.sqrt(1-(eta**2))
 	a_square = (alpha**2)*(eta**2) + (beta**2)*(eta_prime**2)
