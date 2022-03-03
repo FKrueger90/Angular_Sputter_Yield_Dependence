@@ -1,9 +1,11 @@
 from matplotlib import pyplot as plt
+
 import numpy as np
 import angular_dependence as angdep
 import os
 import math
 from matplotlib import animation
+# from matplotlib.animation import PillowWriter
 
 
 dir_data = os.path.join(os.getcwd(), "Data")
@@ -78,7 +80,7 @@ def plot_angdep_movie(target_material, ion, path_data, dir_animations):
 
     theta = angdep_data[0]
     angdep_data.pop(0)
-    name_file = f'angdep-{ion}-on-{target_material}-animation.mp4'
+    name_file = f'angdep-{ion}-on-{target_material}-animation.GIF'
     path_file = os.path.join(dir_animations, name_file)
     fig = plt.figure()
     fig.suptitle(f'{ion} on {target_material}')
@@ -108,8 +110,8 @@ def plot_angdep_movie(target_material, ion, path_data, dir_animations):
 
     anim = animation.FuncAnimation(fig, animate, init_func=init,
                                    frames=100, interval=200, blit=True)
-    plt.show()
-    anim.save(name_file, fps=10, extra_args=['-vcodec', 'mpeg4'], dpi=250, bitrate=5000)
+
+    anim.save(name_file, writer=animation.PillowWriter(fps=10))
 
 
 def plot_mcfpm_reference(num=0):
@@ -150,6 +152,6 @@ def plot_mcfpm_reference(num=0):
 set_plot_globals()
 dir_figures, dir_animations = check_output_folders()
 
-plot_mcfpm_reference(1)
-exit()
+# plot_mcfpm_reference(1)
+
 plot_angdep_movie("Si", "F", path_data_angdep, dir_animations)
